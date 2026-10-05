@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
@@ -34,14 +34,31 @@ jobs:
         run: ./gradlew assembleStableRelease
 
       - name: Sign APK
-        uses: r0adkll/sign-android-release@v1
-        id: sign_app
-        with:
-          releaseDirectory: app/build/outputs/apk/stable/release
-          signingKey: ${{ secrets.KEYSTORE_BASE64 }}
-          keyStorePassword: ${{ secrets.RELEASE_STORE_PASSWORD }}
-          alias: ${{ secrets.RELEASE_KEY_ALIAS }}
-          keyPassword: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > release.jks
+          BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
+          echo "Using Android build-tools from: $BUILD_TOOLS_DIR"
+
+          for apk in app/build/outputs/apk/stable/release/*-unsigned.apk; do
+            if [ -f "$apk" ]; then
+              aligned="${apk%-unsigned.apk}-aligned.apk"
+              signed="${apk%-unsigned.apk}-signed.apk"
+              $BUILD_TOOLS_DIR/zipalign -v -p 4 "$apk" "$aligned"
+              $BUILD_TOOLS_DIR/apksigner sign \
+                --ks release.jks \
+                --ks-key-alias "$KEY_ALIAS" \
+                --ks-pass "pass:$STORE_PASSWORD" \
+                --key-pass "pass:$KEY_PASSWORD" \
+                --out "$signed" "$aligned"
+              echo "Signed APK created: $signed"
+            fi
+          done
+          rm -f release.jks
 
       - name: Upload Signed APK Artifact
         uses: actions/upload-artifact@v4
