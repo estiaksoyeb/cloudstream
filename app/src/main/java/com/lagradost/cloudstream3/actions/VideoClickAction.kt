@@ -21,6 +21,7 @@ import com.lagradost.cloudstream3.actions.temp.MpvKtPackage
 import com.lagradost.cloudstream3.actions.temp.MpvKtPreviewPackage
 import com.lagradost.cloudstream3.actions.temp.MpvPackage
 import com.lagradost.cloudstream3.actions.temp.MpvRexPackage
+import com.lagradost.cloudstream3.actions.temp.MpvRexPreviewPackage
 import com.lagradost.cloudstream3.actions.temp.MpvRxPackage
 import com.lagradost.cloudstream3.actions.temp.MpvYTDLPackage
 import com.lagradost.cloudstream3.actions.temp.NextPlayerPackage
@@ -55,7 +56,6 @@ object VideoClickActionHolder {
         VlcPackage(),
         MpvPackage(),
         MpvExPackage(),
-        MpvRexPackage(),
         NextPlayerPackage(),
         JustPlayerPackage(),
         FcastAction(),
@@ -67,6 +67,8 @@ object VideoClickActionHolder {
         MpvYTDLPackage(),
         MpvKtPackage(),
         MpvKtPreviewPackage(),
+        MpvRexPackage(),
+        MpvRexPreviewPackage(),
         OnlyPlayer(),
         MpvRxPackage(),
         // Always Ask option

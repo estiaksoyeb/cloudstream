@@ -12,13 +12,21 @@ import com.lagradost.cloudstream3.ui.result.ResultEpisode
 import com.lagradost.cloudstream3.utils.DataStoreHelper.getViewPos
 import com.lagradost.cloudstream3.utils.txt
 
+class MpvRexPreviewPackage : MpvRexPackage(
+    appName = "REX Player Preview",
+    packageName = "xyz.mpv.rex.preview",
+)
+
 /**
- * mpvRex external player support
+ * REX Player external player support
  * https://github.com/estiaksoyeb/mpvRex
  */
-class MpvRexPackage : OpenInAppAction(
-    appName = txt("mpvRex"),
-    packageName = "xyz.mpv.rex",
+open class MpvRexPackage(
+    appName: String = "REX Player",
+    packageName: String = "xyz.mpv.rex",
+) : OpenInAppAction(
+    appName = txt(appName),
+    packageName = packageName,
     intentClass = "xyz.mpv.rex.ui.player.PlayerActivity"
 ) {
     override val oneSource = true
